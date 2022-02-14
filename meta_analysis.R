@@ -1,18 +1,18 @@
 #!/usr/bin/env Rscript
 
 # This script performs meta-analysis using metagen (in R) for at least one test in at least two studies
-# Usage: ./meta.R infile number_of_tests outfile
+# Usage: ./meta.R infile outfile
 # infile needs to contain columns Study, B1, SE1, B2, SE2, BN, SEN... etc. (beta coefficients and standard errors from at least two studies). Col names don't matter but the order does
 # outfile is optional (will default to results.txt)
 
 args = commandArgs(trailingOnly=TRUE) 
 
 # test if there is at least one argument: if not, return an error
-if (length(args)<2) {
-  stop("At least two arguments must be supplied (input file and number of tests).n", call.=FALSE)
-} else if (length(args)==2) {
+if (length(args)<1) {
+  stop("At least one input file must be supplied.n", call.=FALSE)
+} else if (length(args)==1) {
   # default output file
-  args[3] = "results.txt"
+  args[2] = "results.txt"
 }
 
 require(meta)
@@ -27,10 +27,10 @@ meta_func <- function(test) {
 
 dfOut <- data.frame(test=character(), pval_q=character(), beta_fixed=character(), lower_fixed=character(), upper_fixed=character(), p_fixed=character(), beta_random=character(), lower_random=character(), upper_random=character(), p_random=character())
 
-tests = args[2]
+tests = (ncol(dfIn)-1)/2
 
 for (test in 1:tests) {
     dfOut <- rbind(dfOut, as.data.frame(meta_func(test)))
     }
 
-write.csv(dfOut, args[3], row.names=FALSE, quote=FALSE)
+write.csv(dfOut, args[2], row.names=FALSE, quote=FALSE)
